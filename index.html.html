@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>給妳的浪漫星空膠捲</title>
+    <!-- 引入 Google Fonts 中文字型與圖示 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-deep: #050b14;
+            --bg-night: #0a1628;
+            --gold-primary: #f0c674;
+            --gold-light: #fffaed;
+            --gold-glow: rgba(240, 198, 116, 0.4);
+            --text-main: #f4f4f4;
+            --text-muted: #b0bac9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Noto Serif TC', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #sky-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: rgba(10, 22, 40, 0.85);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Noto Serif TC', serif;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .control-btn:hover {
+            background: var(--gold-primary);
+            color: var(--bg-deep);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 11, 20, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        #welcome-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(15, 28, 48, 0.95), rgba(8, 16, 30, 0.98));
+            border: 1px solid var(--gold-primary);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 0 40px rgba(240, 198, 116, 0.2);
+            animation: cardFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .welcome-card h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .welcome-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            min-height: 50px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Noto Serif TC', serif;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #f0c674, #d4af37);
+            color: var(--bg-deep);
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(240, 198, 116, 0.4);
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(240, 198, 116, 0.8);
+        }
+
+        .btn-no {
+            background: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+        }
+
+        #reel-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 100px 20px 200px 20px;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        #reel-container.active {
+            opacity: 1;
+        }
+
+        .reel-item {
+            background: rgba(10, 22, 40, 0.7);
+            border: 1px solid rgba(240, 198, 116, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 120px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reel-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reel-img-wrap {
+            width: 100%;
+            height: 380px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid rgba(240, 198, 116, 0.2);
+            background: #000;
+        }
+
+        .reel-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .reel-item:hover .reel-img-wrap img {
+            transform: scale(1.03);
+        }
+
+        .reel-text h3 {
+            color: var(--gold-primary);
+            font-size: 22px;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .reel-text p {
+            color: var(--text-muted);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        #player-bar {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(10, 22, 40, 0.9);
+            border: 1px solid var(--gold-primary);
+            padding: 12px 25px;
+            border-radius: 40px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.7);
+            transition: transform 0.5s ease;
+        }
+
+        #player-bar.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            color: var(--gold-primary);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .speed-badge {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #custom-panel {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 420px;
+            height: 100%;
+            background: rgba(8, 16, 30, 0.98);
+            border-left: 1px solid var(--gold-primary);
+            z-index: 200;
+            padding: 30px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+            transition: right 0.4s ease;
+            overflow-y: auto;
+        }
+
+        #custom-panel.open {
+            right: 0;
+        }
+
+        #custom-panel h2 {
+            color: var(--gold-primary);
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(240, 198, 116, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text-main);
+            font-family: 'Noto Serif TC', serif;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            height: 70px;
+            resize: vertical;
+        }
+
+        .close-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .delete-card-btn {
+            background: rgba(255, 80, 80, 0.15);
+            border: 1px solid rgba(255, 80, 80, 0.4);
+            color: #ff8080;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            float: right;
+        }
+        .delete-card-btn:hover {
+            background: rgba(255, 80, 80, 0.3);
+        }
+
+        #loading-mask {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 250;
+            justify-content: center;
+            align-items: center;
+            color: var(--gold-primary);
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="sky-canvas"></canvas>
+
+    <div class="top-bar">
+        <button class="control-btn" id="music-toggle-btn"><i class="fa-solid fa-music"></i> 音樂：關</button>
+        <button class="control-btn" id="open-config-btn"><i class="fa-solid fa-pen-to-square"></i> 自訂內容 (管理員)</button>
+    </div>
+
+    <div id="welcome-overlay">
+        <div class="welcome-card">
+            <h1>Our Starlight Story</h1>
+            <p>在滿天繁星與燭光見證下，這是一段屬於我們的浪漫回憶。妳願意和我一起看這場電影嗎？</p>
+            <div class="btn-group">
+                <button class="btn btn-yes" id="yes-btn">我願意</button>
+                <button class="btn btn-no" id="no-btn">不要</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reel-container"></div>
+
+    <div id="player-bar">
+        <button class="player-btn" id="play-pause-btn" title="暫停/播放"><i class="fa-solid fa-pause"></i></button>
+        <span style="font-size:13px; color:var(--gold-primary);" id="player-status">自動放映中...</span>
+        <button class="speed-badge" id="speed-btn">速度: 1x</button>
+    </div>
+
+    <div id="custom-panel">
+        <div id="loading-mask">同步雲端儲存中...</div>
+        <button class="close-panel" id="close-config-btn"><i class="fa-solid fa-xmark"></i></button>
+        <h2>編輯回憶膠捲內容</h2>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">提示：請將 <a href="https://imgbb.com/" target="_blank" style="color: var(--gold-primary);">ImgBB</a> 的「直接連結」貼至照片欄位。</p>
+        
+        <div id="form-items-container"></div>
+        
+        <button class="control-btn" id="add-card-btn" style="width:100%; justify-content:center; margin-bottom: 10px; background: rgba(240,198,116,0.1);">
+            <i class="fa-solid fa-plus"></i> 新增一張卡片
+        </button>
+
+        <button class="control-btn" id="save-config-btn" style="width:100%; justify-content:center; background: var(--gold-primary); color: var(--bg-deep); font-weight: 600;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> 儲存並同步至雲端
+        </button>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" type="audio/mpeg">
+    </audio>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfEnsCez2ywbt0NQ4jPBUUr8oAIcIwyA0",
+            authDomain: "account-management-dashb-b4373.firebaseapp.com",
+            databaseURL: "https://account-management-dashb-b4373-default-rtdb.firebaseio.com",
+            projectId: "account-management-dashb-b4373",
+            storageBucket: "account-management-dashb-b4373.firebasestorage.app",
+            messagingSenderId: "294482078870",
+            appId: "1:294482078870:web:bb21cd0fb8eabf3a5f26b7",
+            measurementId: "G-J0ZBKLXGM3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        let storyData = [
+            { img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800", title: "初見的星光", desc: "還記得那天的微風與星空..." },
+            { img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800", title: "溫柔的陪伴", desc: "無論是漫步在街頭還是安靜的午後..." },
+            { img: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800", title: "手牽手走過的風景", desc: "我們一起去過很多地方，拍下無數美麗的瞬間..." },
+            { img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800", title: "未來的無盡浪漫", desc: "未來的日子還很長，願我們牽著彼此的手..." }
+        ];
+
+        async function loadStoryFromFirebase() {
+            try {
+                const docRef = doc(db, "confessions", "mainStory");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().items) {
+                    storyData = docSnap.data().items;
+                    renderReel();
+                } else {
+                    renderReel();
+                }
+            } catch (error) {
+                console.log("載入雲端資料失敗，使用預設值:", error);
+                renderReel();
+            }
+        }
+
+        // 從面板介面收集目前所有欄位資料
+        function collectFormData() {
+            const cards = document.querySelectorAll('.card-form-item');
+            let newData = [];
+            cards.forEach((card, index) => {
+                const imgVal = card.querySelector('.input-img').value;
+                const titleVal = card.querySelector('.input-title').value;
+                const descVal = card.querySelector('.input-desc').value;
+                newData.push({ img: imgVal, title: titleVal, desc: descVal });
+            });
+            return newData;
+        }
+
+        // 儲存至雲端
+        document.getElementById('save-config-btn').addEventListener('click', async () => {
+            const loadingMask = document.getElementById('loading-mask');
+            loadingMask.style.display = 'flex';
+
+            try {
+                storyData = collectFormData();
+                await setDoc(doc(db, "confessions", "mainStory"), { items: storyData });
+                
+                renderReel();
+                document.getElementById('custom-panel').classList.remove('open');
+                alert("恭喜！所有卡片與內容已成功同步儲存至雲端！");
+            } catch (err) {
+                alert("儲存失敗，請檢查網路或 Firebase 設定：" + err.message);
+            } finally {
+                loadingMask.style.display = 'none';
+            }
+        });
+
+        // 畫面渲染膠捲
+        const reelContainer = document.getElementById('reel-container');
+        function renderReel() {
+            reelContainer.innerHTML = '';
+            storyData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'reel-item';
+                div.innerHTML = `
+                    <div class="reel-img-wrap"><img src="${item.img}" alt="Memory" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800'"></div>
+                    <div class="reel-text"><h3>${item.title}</h3><p>${item.desc}</p></div>
+                `;
+                reelContainer.appendChild(div);
+            });
+        }
+
+        // 渲染管理面板表單
+        window.populateForm = function() {
+            const container = document.getElementById('form-items-container');
+            container.innerHTML = '';
+            storyData.forEach((item, index) => {
+                appendCardForm(item.img, item.title, item.desc, index);
+            });
+        };
+
+        function appendCardForm(img = '', title = '', desc = '', index) {
+            const container = document.getElementById('form-items-container');
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card-form-item';
+            cardDiv.style.cssText = "border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px;";
+            cardDiv.innerHTML = `
+                <div style="margin-bottom:8px; overflow:hidden;">
+                    <span style="font-size:14px; color:var(--gold-primary);">卡片項目</span>
+                    <button type="button" class="delete-card-btn" onclick="this.parentElement.parentElement.remove()"><i class="fa-solid fa-trash"></i> 刪除</button>
+                </div>
+                <div class="form-group">
+                    <label>照片網址 (URL)</label>
+                    <input type="text" class="input-img" value="${img}">
+                </div>
+                <div class="form-group">
+                    <label>標題</label>
+                    <input type="text" class="input-title" value="${title}">
+                </div>
+                <div class="form-group">
+                    <label>內文描述</label>
+                    <textarea class="input-desc">${desc}</textarea>
+                </div>
+            `;
+            container.appendChild(cardDiv);
+        }
+
+        // 點擊「新增一張卡片」按鈕
+        document.getElementById('add-card-btn').addEventListener('click', () => {
+            // 先抓取目前畫面上已修改的內容，避免新增時把已輸入的字洗掉
+            if (document.querySelectorAll('.card-form-item').length > 0) {
+                storyData = collectFormData();
+            }
+            storyData.push({ img: "", title: "新的回憶", desc: "請輸入這段回憶的描述..." });
+            window.populateForm();
+        });
+
+        loadStoryFromFirebase();
+    </script>
+
+    <script>
+        const canvas = document.getElementById('sky-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const stars = Array.from({length: 150}, () => ({
+            x: Math.random() * width, y: Math.random() * height,
+            radius: Math.random() * 1.5, alpha: Math.random(), speed: Math.random() * 0.01 + 0.005
+        }));
+
+        const candles = Array.from({length: 20}, () => ({
+            x: Math.random() * width, y: height + Math.random() * 200,
+            radius: Math.random() * 3 + 1, speed: Math.random() * 0.8 + 0.4, alpha: Math.random() * 0.6 + 0.2
+        }));
+
+        function drawSky() {
+            ctx.clearRect(0, 0, width, height);
+            let gradient = ctx.createRadialGradient(width/2, height/2, 50, width/2, height/2, Math.max(width, height));
+            gradient.addColorStop(0, '#0e1f38');
+            gradient.addColorStop(1, '#050b14');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            stars.forEach(s => {
+                s.alpha += s.speed;
+                if (s.alpha > 1 || s.alpha < 0.2) s.speed = -s.speed;
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
+            });
+
+            candles.forEach(c => {
+                c.y -= c.speed;
+                if (c.y < -10) { c.y = height + 10; c.x = Math.random() * width; }
+                ctx.fillStyle = `rgba(240, 198, 116, ${c.alpha})`;
+                ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill();
+            });
+            requestAnimationFrame(drawSky);
+        }
+        drawSky();
+
+        const welcomeOverlay = document.getElementById('welcome-overlay');
+        const reelContainerElem = document.getElementById('reel-container');
+        const playerBar = document.getElementById('player-bar');
+        const bgMusic = document.getElementById('bg-music');
+        const musicToggleBtn = document.getElementById('music-toggle-btn');
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+
+        let isPlayingAuto = false, scrollSpeed = 0.5, animationFrameId = null;
+
+        yesBtn.addEventListener('click', () => {
+            welcomeOverlay.classList.add('hidden');
+            reelContainerElem.classList.add('active');
+            playerBar.classList.add('show');
+            bgMusic.play().then(() => musicToggleBtn.innerHTML = `<i class="fa-solid fa-music"></i> 音樂：開`).catch(() => {});
+            isPlayingAuto = true;
+            startAutoScroll();
+        });
+
+        noBtn.addEventListener('mouseover', () => {
+            noBtn.style.transform = `translate(${(Math.random() - 0.5) * 150}px, ${(Math.random() - 0.5) * 80}px)`;
+        });
+
+        function startAutoScroll() {
+            if (!isPlayingAuto) return;
+            window.scrollBy(0, scrollSpeed);
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
+                isPlayingAuto = false;
+                document.getElementById('play-pause-btn').innerHTML = `<i class="fa-solid fa-play"></i>`;
+                document.getElementById('player-status').innerText = '放映結束';
+                return;
+            }
+            document.querySelectorAll('.reel-item').forEach(item => {
+                const rect = item.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.8 && rect.bottom > 0) item.classList.add('visible');
+            });
+            animationFrameId = requestAnimationFrame(startAutoScroll);
+        }
+
+        document.getElementById('play-pause-btn').addEventListener('click', () => {
+            isPlayingAuto = !isPlayingAuto;
+            if (isPlayingAuto) {
+                document.getElementById('play-pause-btn').innerHTML = `<i class="fa-solid fa-pause"></i>`;
+                document.getElementById('player-status').innerText = '自動放映中...';
+                startAutoScroll();
+            } else {
+                document.getElementById('play-pause-btn').innerHTML = `<i class="fa-solid fa-play"></i>`;
+                document.getElementById('player-status').innerText = '已暫停';
+                cancelAnimationFrame(animationFrameId);
+            }
+        });
+
+        const speeds = [0.3, 0.6, 1.2]; let speedIdx = 0;
+        document.getElementById('speed-btn').addEventListener('click', () => {
+            speedIdx = (speedIdx + 1) % speeds.length;
+            scrollSpeed = speeds[speedIdx];
+            document.getElementById('speed-btn').innerText = `速度: ${['0.5x', '1x', '2x'][speedIdx]}`;
+        });
+
+        musicToggleBtn.addEventListener('click', () => {
+            if (bgMusic.paused) { bgMusic.play(); musicToggleBtn.innerHTML = `<i class="fa-solid fa-music"></i> 音樂：開`; }
+            else { bgMusic.pause(); musicToggleBtn.innerHTML = `<i class="fa-solid fa-music"></i> 音樂：關`; }
+        });
+
+        document.getElementById('open-config-btn').addEventListener('click', () => {
+            document.getElementById('custom-panel').classList.add('open');
+            window.populateForm();
+        });
+        document.getElementById('close-config-btn').addEventListener('click', () => {
+            document.getElementById('custom-panel').classList.remove('open');
+        });
+    </script>
+</body>
+</html>
