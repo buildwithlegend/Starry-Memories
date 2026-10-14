@@ -17,6 +17,7 @@
             --gold-glow: rgba(240, 198, 116, 0.4);
             --text-main: #f4f4f4;
             --text-muted: #b0bac9;
+            --letter-bg: rgba(10, 22, 40, 0.95);
         }
 
         * {
@@ -50,6 +51,12 @@
             z-index: 100;
             display: flex;
             gap: 12px;
+            opacity: 0; /* 初始隱藏，動畫後浮現 */
+            animation: fadeIn 2s ease forwards 4.5s;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
         .control-btn {
@@ -75,109 +82,20 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        #welcome-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5, 11, 20, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 50;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease, visibility 1s ease;
-        }
-
-        #welcome-overlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .welcome-card {
-            background: linear-gradient(135deg, rgba(15, 28, 48, 0.95), rgba(8, 16, 30, 0.98));
-            border: 1px solid var(--gold-primary);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 480px;
-            width: 90%;
-            box-shadow: 0 0 40px rgba(240, 198, 116, 0.2);
-            animation: cardFloat 4s ease-in-out infinite;
-        }
-
-        @keyframes cardFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .welcome-card h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            color: var(--gold-primary);
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-
-        .welcome-card p {
-            color: var(--text-muted);
-            font-size: 15px;
-            line-height: 1.8;
-            margin-bottom: 30px;
-        }
-
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            position: relative;
-            min-height: 50px;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: 'Noto Serif TC', serif;
-            transition: all 0.3s ease;
-            border: none;
-            outline: none;
-        }
-
-        .btn-yes {
-            background: linear-gradient(135deg, #f0c674, #d4af37);
-            color: var(--bg-deep);
-            font-weight: 600;
-            box-shadow: 0 0 15px rgba(240, 198, 116, 0.4);
-        }
-
-        .btn-yes:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(240, 198, 116, 0.8);
-        }
-
-        .btn-no {
-            background: transparent;
-            border: 1px solid var(--text-muted);
-            color: var(--text-muted);
-        }
-
         #reel-container {
             position: relative;
             z-index: 10;
             width: 100%;
             max-width: 700px;
             margin: 0 auto;
-            padding: 100px 20px 200px 20px;
+            padding: 150px 20px 250px 20px;
             opacity: 0;
-            transition: opacity 1.5s ease;
+            transform: translateY(30px);
+            animation: startReel 1.5s ease forwards 4s;
         }
 
-        #reel-container.active {
-            opacity: 1;
+        @keyframes startReel {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .reel-item {
@@ -189,14 +107,16 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             text-align: center;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            opacity: 0; /* 初始隱藏 */
+            transform: scale(0.95); /* 初始縮小 */
+            filter: blur(5px); /* 初始模糊 */
+            transition: opacity 1.5s ease, transform 1.5s ease, filter 1.5s ease;
         }
 
         .reel-item.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1);
+            filter: blur(0);
         }
 
         .reel-img-wrap {
@@ -233,6 +153,49 @@
             line-height: 1.8;
         }
 
+        #final-letter {
+            opacity: 0;
+            transform: translateY(50px);
+            border: 1px solid rgba(240, 198, 116, 0.5);
+            background: var(--letter-bg);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 0 30px var(--gold-glow);
+            transition: opacity 2s ease, transform 2s ease;
+            position: relative;
+            z-index: 15;
+        }
+
+        #final-letter.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #final-letter .icon-wrap {
+            font-size: 30px;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+        }
+
+        #final-letter h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-primary);
+            font-size: 24px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        #final-letter-content {
+            color: var(--gold-light);
+            font-size: 16px;
+            line-height: 2;
+            font-weight: 300;
+            white-space: pre-wrap; /* 保持換行 */
+        }
+
         #player-bar {
             position: fixed;
             bottom: 25px;
@@ -248,11 +211,14 @@
             gap: 20px;
             backdrop-filter: blur(10px);
             box-shadow: 0 5px 25px rgba(0,0,0,0.7);
-            transition: transform 0.5s ease;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            animation: fadeIn 2s ease forwards 4.5s;
         }
 
         #player-bar.show {
             transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         .player-btn {
@@ -373,17 +339,6 @@
         <button class="control-btn" id="open-config-btn"><i class="fa-solid fa-pen-to-square"></i> 自訂內容 (管理員)</button>
     </div>
 
-    <div id="welcome-overlay">
-        <div class="welcome-card">
-            <h1>Our Starlight Story</h1>
-            <p>在滿天繁星與燭光見證下，這是一段屬於我們的浪漫回憶。妳願意和我一起看這場電影嗎？</p>
-            <div class="btn-group">
-                <button class="btn btn-yes" id="yes-btn">我願意</button>
-                <button class="btn btn-no" id="no-btn">不要</button>
-            </div>
-        </div>
-    </div>
-
     <div id="reel-container"></div>
 
     <div id="player-bar">
@@ -400,9 +355,14 @@
         
         <div id="form-items-container"></div>
         
-        <button class="control-btn" id="add-card-btn" style="width:100%; justify-content:center; margin-bottom: 10px; background: rgba(240,198,116,0.1);">
+        <button class="control-btn" id="add-card-btn" style="width:100%; justify-content:center; margin-bottom: 15px; background: rgba(240,198,116,0.1);">
             <i class="fa-solid fa-plus"></i> 新增一張卡片
         </button>
+
+        <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+            <label>告白信內容 (最後的驚喜)</label>
+            <textarea id="input-final-letter-text" style="height: 120px;"></textarea>
+        </div>
 
         <button class="control-btn" id="save-config-btn" style="width:100%; justify-content:center; background: var(--gold-primary); color: var(--bg-deep); font-weight: 600;">
             <i class="fa-solid fa-cloud-arrow-up"></i> 儲存並同步至雲端
@@ -415,7 +375,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -425,20 +384,14 @@
             projectId: "account-management-dashb-b4373",
             storageBucket: "account-management-dashb-b4373.firebasestorage.app",
             messagingSenderId: "294482078870",
-            appId: "1:294482078870:web:bb21cd0fb8eabf3a5f26b7",
-            measurementId: "G-J0ZBKLXGM3"
+            appId: "1:294482078870:web:bb21cd0fb8eabf3a5f26b7"
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        let storyData = [
-            { img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800", title: "初見的星光", desc: "還記得那天的微風與星空..." },
-            { img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800", title: "溫柔的陪伴", desc: "無論是漫步在街頭還是安靜的午後..." },
-            { img: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800", title: "手牽手走過的風景", desc: "我們一起去過很多地方，拍下無數美麗的瞬間..." },
-            { img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800", title: "未來的無盡浪漫", desc: "未來的日子還很長，願我們牽著彼此的手..." }
-        ];
+        let storyData = [];
+        let finalLetterText = "在熙攘的百貨與寂靜的星空下，我學會了如何把平凡的日子過成詩。\n願我們牽著手，繼續走過季節的百貨，走過未來的每一天。\n\n餘生，請多多指教 ❤️";
 
         async function loadStoryFromFirebase() {
             try {
@@ -446,12 +399,11 @@
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists() && docSnap.data().items) {
                     storyData = docSnap.data().items;
-                    renderReel();
-                } else {
-                    renderReel();
+                    finalLetterText = docSnap.data().finalLetter || finalLetterText;
                 }
             } catch (error) {
-                console.log("載入雲端資料失敗，使用預設值:", error);
+                console.log("載入雲端資料失敗:", error);
+            } finally {
                 renderReel();
             }
         }
@@ -466,7 +418,8 @@
                 const descVal = card.querySelector('.input-desc').value;
                 newData.push({ img: imgVal, title: titleVal, desc: descVal });
             });
-            return newData;
+            const letterVal = document.getElementById('input-final-letter-text').value;
+            return { items: newData, finalLetter: letterVal };
         }
 
         // 儲存至雲端
@@ -475,9 +428,11 @@
             loadingMask.style.display = 'flex';
 
             try {
-                storyData = collectFormData();
-                await setDoc(doc(db, "confessions", "mainStory"), { items: storyData });
+                const { items, finalLetter } = collectFormData();
+                await setDoc(doc(db, "confessions", "mainStory"), { items, finalLetter });
                 
+                storyData = items;
+                finalLetterText = finalLetter;
                 renderReel();
                 document.getElementById('custom-panel').classList.remove('open');
                 alert("恭喜！所有卡片與內容已成功同步儲存至雲端！");
@@ -501,6 +456,15 @@
                 `;
                 reelContainer.appendChild(div);
             });
+            // 渲染最後的浪漫告白
+            const letterDiv = document.createElement('div');
+            letterDiv.id = 'final-letter';
+            letterDiv.innerHTML = `
+                <div class="icon-wrap"><i class="fa-solid fa-moon"></i></div>
+                <h2>通往未來的約定</h2>
+                <p id="final-letter-content">${finalLetterText}</p>
+            `;
+            reelContainer.appendChild(letterDiv);
         }
 
         // 渲染管理面板表單
@@ -510,6 +474,7 @@
             storyData.forEach((item, index) => {
                 appendCardForm(item.img, item.title, item.desc, index);
             });
+            document.getElementById('input-final-letter-text').value = finalLetterText;
         };
 
         function appendCardForm(img = '', title = '', desc = '', index) {
@@ -540,9 +505,10 @@
 
         // 點擊「新增一張卡片」按鈕
         document.getElementById('add-card-btn').addEventListener('click', () => {
-            // 先抓取目前畫面上已修改的內容，避免新增時把已輸入的字洗掉
             if (document.querySelectorAll('.card-form-item').length > 0) {
-                storyData = collectFormData();
+                const { items, finalLetter } = collectFormData();
+                storyData = items;
+                finalLetterText = finalLetter;
             }
             storyData.push({ img: "", title: "新的回憶", desc: "請輸入這段回憶的描述..." });
             window.populateForm();
@@ -573,6 +539,14 @@
             radius: Math.random() * 3 + 1, speed: Math.random() * 0.8 + 0.4, alpha: Math.random() * 0.6 + 0.2
         }));
 
+        // 開場撒落的星光
+        const scatteringStars = Array.from({length: 100}, () => ({
+            x: Math.random() * width, y: -200 - Math.random() * 500,
+            radius: Math.random() * 3 + 1.5, speed: Math.random() * 3 + 2, alpha: 1
+        }));
+
+        let openingScatteringFinished = false;
+
         function drawSky() {
             ctx.clearRect(0, 0, width, height);
             let gradient = ctx.createRadialGradient(width/2, height/2, 50, width/2, height/2, Math.max(width, height));
@@ -581,6 +555,7 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
+            // 繪製靜態繁星
             stars.forEach(s => {
                 s.alpha += s.speed;
                 if (s.alpha > 1 || s.alpha < 0.2) s.speed = -s.speed;
@@ -588,37 +563,44 @@
                 ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
             });
 
+            // 繪製燭光上升
             candles.forEach(c => {
                 c.y -= c.speed;
                 if (c.y < -10) { c.y = height + 10; c.x = Math.random() * width; }
                 ctx.fillStyle = `rgba(240, 198, 116, ${c.alpha})`;
                 ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill();
             });
+
+            // 繪製開場撒落的星光（只在初始播放一次）
+            if (!openingScatteringFinished) {
+                scatteringStars.forEach(s => {
+                    s.y += s.speed;
+                    s.alpha *= 0.985; // 慢慢淡出
+                    ctx.fillStyle = `rgba(240, 198, 116, ${s.alpha})`;
+                    ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
+                });
+                if (scatteringStars.every(s => s.alpha < 0.05)) {
+                    openingScatteringFinished = true;
+                }
+            }
             requestAnimationFrame(drawSky);
         }
         drawSky();
 
-        const welcomeOverlay = document.getElementById('welcome-overlay');
         const reelContainerElem = document.getElementById('reel-container');
         const playerBar = document.getElementById('player-bar');
         const bgMusic = document.getElementById('bg-music');
         const musicToggleBtn = document.getElementById('music-toggle-btn');
-        const yesBtn = document.getElementById('yes-btn');
-        const noBtn = document.getElementById('no-btn');
-
         let isPlayingAuto = false, scrollSpeed = 0.5, animationFrameId = null;
 
-        yesBtn.addEventListener('click', () => {
-            welcomeOverlay.classList.add('hidden');
+        // 頁面加載後直接開始浪漫旅程
+        window.addEventListener('load', () => {
             reelContainerElem.classList.add('active');
             playerBar.classList.add('show');
+            // 嘗試自動播放音樂（部分瀏覽器可能會攔截）
             bgMusic.play().then(() => musicToggleBtn.innerHTML = `<i class="fa-solid fa-music"></i> 音樂：開`).catch(() => {});
             isPlayingAuto = true;
-            startAutoScroll();
-        });
-
-        noBtn.addEventListener('mouseover', () => {
-            noBtn.style.transform = `translate(${(Math.random() - 0.5) * 150}px, ${(Math.random() - 0.5) * 80}px)`;
+            setTimeout(startAutoScroll, 4500); // 在開場動畫後開始放映
         });
 
         function startAutoScroll() {
@@ -630,9 +612,19 @@
                 document.getElementById('player-status').innerText = '放映結束';
                 return;
             }
-            document.querySelectorAll('.reel-item').forEach(item => {
+            
+            // 核心邏輯：控制照片、文字與告白信慢慢浮現
+            const items = document.querySelectorAll('.reel-item, #final-letter');
+            items.forEach(item => {
                 const rect = item.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.8 && rect.bottom > 0) item.classList.add('visible');
+                if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+                    item.classList.add('visible');
+                    // 如果播到最後一張照片後面，浮現終極告白信
+                    if (item.id === 'final-letter') {
+                        item.classList.add('show');
+                        document.getElementById('player-status').innerText = '致 唯一的妳';
+                    }
+                }
             });
             animationFrameId = requestAnimationFrame(startAutoScroll);
         }
