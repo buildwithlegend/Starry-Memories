@@ -119,25 +119,32 @@
             filter: blur(0);
         }
 
+        /* 完美修復：相框高度自動適應直式與橫式照片 */
         .reel-img-wrap {
             width: 100%;
-            height: 380px;
+            height: auto;
+            max-height: 75vh;
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 20px;
             border: 1px solid rgba(240, 198, 116, 0.2);
-            background: #000;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .reel-img-wrap img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 75vh;
+            object-fit: contain;
+            display: block;
             transition: transform 0.5s ease;
         }
 
         .reel-item:hover .reel-img-wrap img {
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .reel-text h3 {
