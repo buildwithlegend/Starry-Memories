@@ -44,58 +44,116 @@
             pointer-events: none;
         }
 
-        .top-bar {
+        /* 密碼解鎖畫面 */
+        #auth-overlay {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 11, 20, 0.96);
+            z-index: 300;
             display: flex;
-            gap: 12px;
-            opacity: 0; /* 初始隱藏，動畫後浮現 */
-            animation: fadeIn 2s ease forwards 4.5s;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            transition: opacity 0.8s ease;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        .control-btn {
+        .auth-box {
             background: rgba(10, 22, 40, 0.85);
-            border: 1px solid var(--gold-primary);
+            border: 1px solid rgba(240, 198, 116, 0.4);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 20px var(--gold-glow);
+        }
+
+        .auth-box i {
+            font-size: 32px;
             color: var(--gold-primary);
-            padding: 8px 16px;
+            margin-bottom: 15px;
+        }
+
+        .auth-box h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-primary);
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .auth-box p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .auth-input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(240, 198, 116, 0.3);
             border-radius: 30px;
+            padding: 12px 20px;
+            color: var(--gold-light);
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 3px;
+            outline: none;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .auth-input:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: var(--gold-primary);
+            border: none;
+            color: var(--bg-deep);
+            padding: 12px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
             font-family: 'Noto Serif TC', serif;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            backdrop-filter: blur(5px);
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .control-btn:hover {
-            background: var(--gold-primary);
-            color: var(--bg-deep);
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
+        .auth-btn:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+        }
+
+        #auth-error {
+            color: #ff8080;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* 主內容區域 */
         #reel-container {
             position: relative;
             z-index: 10;
             width: 100%;
             max-width: 700px;
             margin: 0 auto;
-            padding: 150px 20px 250px 20px;
+            padding: 80px 20px 200px 20px;
             opacity: 0;
             transform: translateY(30px);
-            animation: startReel 1.5s ease forwards 4s;
+            transition: opacity 1.5s ease, transform 1.5s ease;
         }
 
-        @keyframes startReel {
-            to { opacity: 1; transform: translateY(0); }
+        #reel-container.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .reel-item {
@@ -107,9 +165,9 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             text-align: center;
-            opacity: 0; /* 初始隱藏 */
-            transform: scale(0.95); /* 初始縮小 */
-            filter: blur(5px); /* 初始模糊 */
+            opacity: 0;
+            transform: scale(0.95);
+            filter: blur(5px);
             transition: opacity 1.5s ease, transform 1.5s ease, filter 1.5s ease;
         }
 
@@ -119,7 +177,6 @@
             filter: blur(0);
         }
 
-        /* 完美修復：相框高度自動適應直式與橫式照片 */
         .reel-img-wrap {
             width: 100%;
             height: auto;
@@ -200,140 +257,7 @@
             font-size: 16px;
             line-height: 2;
             font-weight: 300;
-            white-space: pre-wrap; /* 保持換行 */
-        }
-
-        #player-bar {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(10, 22, 40, 0.9);
-            border: 1px solid var(--gold-primary);
-            padding: 12px 25px;
-            border-radius: 40px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 5px 25px rgba(0,0,0,0.7);
-            transition: transform 0.5s ease, opacity 0.5s ease;
-            opacity: 0;
-            animation: fadeIn 2s ease forwards 4.5s;
-        }
-
-        #player-bar.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .player-btn {
-            background: none;
-            border: none;
-            color: var(--gold-primary);
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .speed-badge {
-            font-size: 13px;
-            color: var(--text-muted);
-            background: rgba(255,255,255,0.05);
-            padding: 4px 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        #custom-panel {
-            position: fixed;
-            top: 0;
-            right: -420px;
-            width: 420px;
-            height: 100%;
-            background: rgba(8, 16, 30, 0.98);
-            border-left: 1px solid var(--gold-primary);
-            z-index: 200;
-            padding: 30px;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
-            transition: right 0.4s ease;
-            overflow-y: auto;
-        }
-
-        #custom-panel.open {
-            right: 0;
-        }
-
-        #custom-panel h2 {
-            color: var(--gold-primary);
-            font-size: 20px;
-            margin-bottom: 20px;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(240, 198, 116, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            color: var(--text-main);
-            font-family: 'Noto Serif TC', serif;
-            font-size: 14px;
-        }
-
-        .form-group textarea {
-            height: 70px;
-            resize: vertical;
-        }
-
-        .close-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .delete-card-btn {
-            background: rgba(255, 80, 80, 0.15);
-            border: 1px solid rgba(255, 80, 80, 0.4);
-            color: #ff8080;
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            float: right;
-        }
-        .delete-card-btn:hover {
-            background: rgba(255, 80, 80, 0.3);
-        }
-
-        #loading-mask {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 250;
-            justify-content: center;
-            align-items: center;
-            color: var(--gold-primary);
-            font-size: 16px;
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -341,40 +265,20 @@
 
     <canvas id="sky-canvas"></canvas>
 
-    <div class="top-bar">
-        <button class="control-btn" id="music-toggle-btn"><i class="fa-solid fa-music"></i> 音樂：關</button>
-        <button class="control-btn" id="open-config-btn"><i class="fa-solid fa-pen-to-square"></i> 自訂內容 (管理員)</button>
-    </div>
-
-    <div id="reel-container"></div>
-
-    <div id="player-bar">
-        <button class="player-btn" id="play-pause-btn" title="暫停/播放"><i class="fa-solid fa-pause"></i></button>
-        <span style="font-size:13px; color:var(--gold-primary);" id="player-status">自動放映中...</span>
-        <button class="speed-badge" id="speed-btn">速度: 1x</button>
-    </div>
-
-    <div id="custom-panel">
-        <div id="loading-mask">同步雲端儲存中...</div>
-        <button class="close-panel" id="close-config-btn"><i class="fa-solid fa-xmark"></i></button>
-        <h2>編輯回憶膠捲內容</h2>
-        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">提示：請將 <a href="https://imgbb.com/" target="_blank" style="color: var(--gold-primary);">ImgBB</a> 的「直接連結」貼至照片欄位。</p>
-        
-        <div id="form-items-container"></div>
-        
-        <button class="control-btn" id="add-card-btn" style="width:100%; justify-content:center; margin-bottom: 15px; background: rgba(240,198,116,0.1);">
-            <i class="fa-solid fa-plus"></i> 新增一張卡片
-        </button>
-
-        <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-            <label>告白信內容 (最後的驚喜)</label>
-            <textarea id="input-final-letter-text" style="height: 120px;"></textarea>
+    <!-- 密碼驗證遮罩層 -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <i class="fa-solid fa-lock"></i>
+            <h2>星空記憶解鎖</h2>
+            <p>請輸入專屬於我們的密碼，開啟這段回憶旅程</p>
+            <input type="password" id="password-input" class="auth-input" placeholder="請輸入密碼">
+            <button id="auth-submit-btn" class="auth-btn">進入星空</button>
+            <div id="auth-error">密碼錯誤，請重新輸入</div>
         </div>
-
-        <button class="control-btn" id="save-config-btn" style="width:100%; justify-content:center; background: var(--gold-primary); color: var(--bg-deep); font-weight: 600;">
-            <i class="fa-solid fa-cloud-arrow-up"></i> 儲存並同步至雲端
-        </button>
     </div>
+
+    <!-- 回憶膠捲容器 -->
+    <div id="reel-container"></div>
 
     <audio id="bg-music" loop>
         <source src="https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" type="audio/mpeg">
@@ -382,7 +286,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDfEnsCez2ywbt0NQ4jPBUUr8oAIcIwyA0",
@@ -415,46 +319,10 @@
             }
         }
 
-        // 從面板介面收集目前所有欄位資料
-        function collectFormData() {
-            const cards = document.querySelectorAll('.card-form-item');
-            let newData = [];
-            cards.forEach((card, index) => {
-                const imgVal = card.querySelector('.input-img').value;
-                const titleVal = card.querySelector('.input-title').value;
-                const descVal = card.querySelector('.input-desc').value;
-                newData.push({ img: imgVal, title: titleVal, desc: descVal });
-            });
-            const letterVal = document.getElementById('input-final-letter-text').value;
-            return { items: newData, finalLetter: letterVal };
-        }
-
-        // 儲存至雲端
-        document.getElementById('save-config-btn').addEventListener('click', async () => {
-            const loadingMask = document.getElementById('loading-mask');
-            loadingMask.style.display = 'flex';
-
-            try {
-                const { items, finalLetter } = collectFormData();
-                await setDoc(doc(db, "confessions", "mainStory"), { items, finalLetter });
-                
-                storyData = items;
-                finalLetterText = finalLetter;
-                renderReel();
-                document.getElementById('custom-panel').classList.remove('open');
-                alert("恭喜！所有卡片與內容已成功同步儲存至雲端！");
-            } catch (err) {
-                alert("儲存失敗，請檢查網路或 Firebase 設定：" + err.message);
-            } finally {
-                loadingMask.style.display = 'none';
-            }
-        });
-
-        // 畫面渲染膠捲
         const reelContainer = document.getElementById('reel-container');
         function renderReel() {
             reelContainer.innerHTML = '';
-            storyData.forEach((item, index) => {
+            storyData.forEach((item) => {
                 const div = document.createElement('div');
                 div.className = 'reel-item';
                 div.innerHTML = `
@@ -463,7 +331,6 @@
                 `;
                 reelContainer.appendChild(div);
             });
-            // 渲染最後的浪漫告白
             const letterDiv = document.createElement('div');
             letterDiv.id = 'final-letter';
             letterDiv.innerHTML = `
@@ -473,53 +340,6 @@
             `;
             reelContainer.appendChild(letterDiv);
         }
-
-        // 渲染管理面板表單
-        window.populateForm = function() {
-            const container = document.getElementById('form-items-container');
-            container.innerHTML = '';
-            storyData.forEach((item, index) => {
-                appendCardForm(item.img, item.title, item.desc, index);
-            });
-            document.getElementById('input-final-letter-text').value = finalLetterText;
-        };
-
-        function appendCardForm(img = '', title = '', desc = '', index) {
-            const container = document.getElementById('form-items-container');
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'card-form-item';
-            cardDiv.style.cssText = "border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px;";
-            cardDiv.innerHTML = `
-                <div style="margin-bottom:8px; overflow:hidden;">
-                    <span style="font-size:14px; color:var(--gold-primary);">卡片項目</span>
-                    <button type="button" class="delete-card-btn" onclick="this.parentElement.parentElement.remove()"><i class="fa-solid fa-trash"></i> 刪除</button>
-                </div>
-                <div class="form-group">
-                    <label>照片網址 (URL)</label>
-                    <input type="text" class="input-img" value="${img}">
-                </div>
-                <div class="form-group">
-                    <label>標題</label>
-                    <input type="text" class="input-title" value="${title}">
-                </div>
-                <div class="form-group">
-                    <label>內文描述</label>
-                    <textarea class="input-desc">${desc}</textarea>
-                </div>
-            `;
-            container.appendChild(cardDiv);
-        }
-
-        // 點擊「新增一張卡片」按鈕
-        document.getElementById('add-card-btn').addEventListener('click', () => {
-            if (document.querySelectorAll('.card-form-item').length > 0) {
-                const { items, finalLetter } = collectFormData();
-                storyData = items;
-                finalLetterText = finalLetter;
-            }
-            storyData.push({ img: "", title: "新的回憶", desc: "請輸入這段回憶的描述..." });
-            window.populateForm();
-        });
 
         loadStoryFromFirebase();
     </script>
@@ -546,7 +366,6 @@
             radius: Math.random() * 3 + 1, speed: Math.random() * 0.8 + 0.4, alpha: Math.random() * 0.6 + 0.2
         }));
 
-        // 開場撒落的星光
         const scatteringStars = Array.from({length: 100}, () => ({
             x: Math.random() * width, y: -200 - Math.random() * 500,
             radius: Math.random() * 3 + 1.5, speed: Math.random() * 3 + 2, alpha: 1
@@ -562,7 +381,6 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
-            // 繪製靜態繁星
             stars.forEach(s => {
                 s.alpha += s.speed;
                 if (s.alpha > 1 || s.alpha < 0.2) s.speed = -s.speed;
@@ -570,7 +388,6 @@
                 ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
             });
 
-            // 繪製燭光上升
             candles.forEach(c => {
                 c.y -= c.speed;
                 if (c.y < -10) { c.y = height + 10; c.x = Math.random() * width; }
@@ -578,11 +395,10 @@
                 ctx.beginPath(); ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2); ctx.fill();
             });
 
-            // 繪製開場撒落的星光（只在初始播放一次）
             if (!openingScatteringFinished) {
                 scatteringStars.forEach(s => {
                     s.y += s.speed;
-                    s.alpha *= 0.985; // 慢慢淡出
+                    s.alpha *= 0.985;
                     ctx.fillStyle = `rgba(240, 198, 116, ${s.alpha})`;
                     ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
                 });
@@ -594,79 +410,47 @@
         }
         drawSky();
 
+        // 密碼解鎖互動邏輯
+        const authOverlay = document.getElementById('auth-overlay');
+        const passwordInput = document.getElementById('password-input');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authError = document.getElementById('auth-error');
         const reelContainerElem = document.getElementById('reel-container');
-        const playerBar = document.getElementById('player-bar');
         const bgMusic = document.getElementById('bg-music');
-        const musicToggleBtn = document.getElementById('music-toggle-btn');
-        let isPlayingAuto = false, scrollSpeed = 0.5, animationFrameId = null;
 
-        // 頁面加載後直接開始浪漫旅程
-        window.addEventListener('load', () => {
-            reelContainerElem.classList.add('active');
-            playerBar.classList.add('show');
-            // 嘗試自動播放音樂（部分瀏覽器可能會攔截）
-            bgMusic.play().then(() => musicToggleBtn.innerHTML = `<i class="fa-solid fa-music"></i> 音樂：開`).catch(() => {});
-            isPlayingAuto = true;
-            setTimeout(startAutoScroll, 4500); // 在開場動畫後開始放映
+        function handleUnlock() {
+            const enteredPwd = passwordInput.value.trim();
+            if (enteredPwd === "1150829") {
+                authOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    authOverlay.style.display = 'none';
+                    reelContainerElem.classList.add('active');
+                    // 解鎖成功後自動播放音樂
+                    bgMusic.play().catch(() => {});
+                }, 800);
+            } else {
+                authError.style.display = 'block';
+                passwordInput.style.borderColor = '#ff8080';
+            }
+        }
+
+        authSubmitBtn.addEventListener('click', handleUnlock);
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleUnlock();
         });
 
-        function startAutoScroll() {
-            if (!isPlayingAuto) return;
-            window.scrollBy(0, scrollSpeed);
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
-                isPlayingAuto = false;
-                document.getElementById('play-pause-btn').innerHTML = `<i class="fa-solid fa-play"></i>`;
-                document.getElementById('player-status').innerText = '放映結束';
-                return;
-            }
-            
-            // 核心邏輯：控制照片、文字與告白信慢慢浮現
+        // 滾動時自動浮現照片與告白信
+        window.addEventListener('scroll', () => {
             const items = document.querySelectorAll('.reel-item, #final-letter');
             items.forEach(item => {
                 const rect = item.getBoundingClientRect();
                 if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
                     item.classList.add('visible');
-                    // 如果播到最後一張照片後面，浮現終極告白信
                     if (item.id === 'final-letter') {
                         item.classList.add('show');
-                        document.getElementById('player-status').innerText = '致 唯一的妳';
                     }
                 }
             });
-            animationFrameId = requestAnimationFrame(startAutoScroll);
-        }
-
-        document.getElementById('play-pause-btn').addEventListener('click', () => {
-            isPlayingAuto = !isPlayingAuto;
-            if (isPlayingAuto) {
-                document.getElementById('play-pause-btn').innerHTML = `<i class="fa-solid fa-pause"></i>`;
-                document.getElementById('player-status').innerText = '自動放映中...';
-                startAutoScroll();
-            } else {
-                document.getElementById('play-pause-btn').innerHTML = `<i class="fa-solid fa-play"></i>`;
-                document.getElementById('player-status').innerText = '已暫停';
-                cancelAnimationFrame(animationFrameId);
-            }
-        });
-
-        const speeds = [0.3, 0.6, 1.2]; let speedIdx = 0;
-        document.getElementById('speed-btn').addEventListener('click', () => {
-            speedIdx = (speedIdx + 1) % speeds.length;
-            scrollSpeed = speeds[speedIdx];
-            document.getElementById('speed-btn').innerText = `速度: ${['0.5x', '1x', '2x'][speedIdx]}`;
-        });
-
-        musicToggleBtn.addEventListener('click', () => {
-            if (bgMusic.paused) { bgMusic.play(); musicToggleBtn.innerHTML = `<i class="fa-solid fa-music"></i> 音樂：開`; }
-            else { bgMusic.pause(); musicToggleBtn.innerHTML = `<i class="fa-solid fa-music"></i> 音樂：關`; }
-        });
-
-        document.getElementById('open-config-btn').addEventListener('click', () => {
-            document.getElementById('custom-panel').classList.add('open');
-            window.populateForm();
-        });
-        document.getElementById('close-config-btn').addEventListener('click', () => {
-            document.getElementById('custom-panel').classList.remove('open');
         });
     </script>
 </body>
